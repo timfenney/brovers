@@ -11,9 +11,9 @@ describe Rover do
     it 'reports its location' do
       expect(@rover.location).to eq(Vector2d.new(x: 1, y: 2))
     end
-
+    
     it 'reports its direction' do
-      expect(@rover.direction).to eq('N')
+        expect(@rover.direction).to eq('N')
     end
 
     it 'returns a rover moved forward' do
@@ -25,7 +25,7 @@ describe Rover do
       rover = @rover.run(commands: 'R')
       expect(rover.direction).to eq('E')
     end
-    
+
     it 'returns a rover turned left' do
       rover = @rover.run(commands: 'L')
       expect(rover.direction).to eq('W')
@@ -33,8 +33,32 @@ describe Rover do
 
     it 'returns a rover for multiple commands' do
       rover = @rover.run(commands: 'LLLMMRM')
+
       expect([rover.location,
               rover.direction]).to eq([Vector2d.new(x: 3, y: 1), 'S'])
+    end
+
+    it 'advances when given a block that returns true' do
+      rover = @rover.run(commands: 'MMM') do |x, y|
+        true
+      end
+      expect([rover.location,
+              rover.direction]).to eq([Vector2d.new(x: 1, y: 5), 'N'])
+    end
+
+    it 'does not advance when given a block that returns false' do
+      rover = @rover.run(commands: 'MMM') do |x, y|
+        false
+      end
+      expect([rover.location,
+              rover.direction]).to eq([Vector2d.new(x: 1, y: 2), 'N'])
+    end
+
+    it 'turns when given a block that returns false' do
+      rover = @rover.run(commands: 'LLR') do |x, y|
+        false
+      end
+      expect(rover.direction).to eq('W')
     end
   end
 

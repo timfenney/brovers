@@ -2,7 +2,6 @@
 #
 # This class simulates a rover. It uses FauxO, so doesn't mutate itself, but
 # rather returns a new rover for changes.
-
 require_relative './vector_2d'
 
 # Constants
@@ -39,13 +38,13 @@ class Rover
     S => W,
     W => N
   }.freeze
-
+  
   def initialize(location:, direction:)
     @location = location
     @direction = direction
   end
 
-  def run(commands:)
+  def run(commands:, &block)
     next_location, next_direction = @location, @direction
     
     commands.chars.each do |command|
@@ -53,7 +52,12 @@ class Rover
         maybe_next_location = next_location
         delta = DELTA[next_direction]
         maybe_next_location += delta
-        next_location = maybe_next_location
+
+        # Only move the rover if the block says it is ok
+        if !block || block && block.call(maybe_next_location)
+          next_location = maybe_next_location
+        end
+        
       elsif command == R || command == L
         turn = command == R ? RIGHT : LEFT
         next_direction = turn[next_direction]

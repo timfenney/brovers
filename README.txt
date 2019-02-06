@@ -6,6 +6,8 @@ simulated (think "NPC meme").
 
 If you have Bundler, a bundle in the project root and you should be good to go.
 
+To feed it new input, simply overwrite input.txt.
+
 The program can be run by executing `bin/brovers`.
 
 Here are some decisions I made, and the rationale behind them:
@@ -18,6 +20,10 @@ Here are some decisions I made, and the rationale behind them:
 2) Value objects
   Vector2d is an example of a value object, it doesn't mutate anything, but
   reifies the concept of a 2d vector, such as a point, or a translation.
+  It doesn't do IO or anything complex, so doesn't need to be mocked in tests.
+  These give the same benefits as mock objects, but have the added benefit
+  that you are actually integrating against the object that will be used
+  in production.
 
 3) Code as state machines
   While I didn't use a library, instead of lots of nested conditionals,
@@ -37,8 +43,20 @@ Here are some decisions I made, and the rationale behind them:
   forgoing unit testing of the shell objects, but saving the testing of their
   behaviour for integration tests.
 
+6) Unspecified behaviour
+  What should be done when a rover reaches an impassable location, such as the
+  end of the plateau, or another rover?
+  For this case, I simply made the rover unable to move to such a location.
+
 Completion status
 
-This project is almost complete, but is not yet functional. You may observe
-the intent by running the only cucumber feature with `cucumber`, or run any
-of the specs with `rspec`, both in the project root.
+This project needs some more testing. The cucumber scenario was difficult to
+get working, I think it is grabbing the terminal so my IO isn't working
+in the steps definition file. Other classes need some serious testing.
+On the bright side, things seem to be wired up ok.
+
+This is pretty barebones, in terms of features, but I wanted to focus on
+code quality, and to try to get arbitrary inputs to work. It should work not
+only on _very_ large files, but on files with _very_ large lines of command
+input. This is due to the method of reading input in streamed chunks,
+not simply lines, or even slurping the file in all at once.
